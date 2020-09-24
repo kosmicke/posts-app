@@ -13,6 +13,23 @@ const postsService = {
         const enpoint = apiUrl + "/posts/" + postId
         return axios.get(enpoint)
     },
+
+    async create(data){
+        const enpoint = apiUrl + "/posts"
+        return axios.post(enpoint, data)
+    },
+
+    async edit(data, postId){
+        const enpoint = apiUrl + "/posts/" + postId
+        return axios.put(enpoint, data)
+    },
+
+    async delete(postId){
+        const enpoint = apiUrl + "/posts/" + postId
+        return axios.delete(enpoint)
+    },
+
+
 }
 
 export default postsService;

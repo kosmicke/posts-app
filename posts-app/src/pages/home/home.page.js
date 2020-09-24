@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import authService from '../../services/auth.service';
+import PageTop from '../../components/page-top/page-top.component';
 
 class Home extends React.Component{
 
@@ -28,12 +29,7 @@ class Home extends React.Component{
 
         return (
            <div className="container">
-                <div className="page-top">
-                    <div className="page-top__title">
-                        <h2>Home</h2>
-                        <p>Tela inicial do sistema</p>
-                    </div>
-                </div>
+                <PageTop title='Home' desc='Página inicial do sistema'/>
            </div>
         )
     }

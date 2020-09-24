@@ -4,6 +4,7 @@ import './App.css';
 
 import Home from './pages/home/home.page';
 import Login from './pages/login/login.page';
+import PostEdit from './pages/post-edit/post-edit.component';
 import PostDetail from './pages/post-detail/post-detail.component';
 import PostList from './pages/post-list/post-list.component';
 import authService from './services/auth.service';
@@ -62,6 +63,8 @@ class App extends React.Component{
             <Route path="/login" component={props => <Login {...props} onLogin={() => this.loadUserData()}/>}/>
             <Route path="/post-list" component={PostList}/>
             <Route path="/post-detail/:id" component={PostDetail}/>
+            <Route path="/post-add" component={PostEdit}/>
+            <Route path="/post-edit/:id" component={PostEdit}/>
           </Switch>
         </BrowserRouter>
     )

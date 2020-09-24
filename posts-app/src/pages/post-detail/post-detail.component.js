@@ -1,58 +1,69 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
+import PageTop from '../../components/page-top/page-top.component';
 import authService from '../../services/auth.service';
 import postsService from '../../services/posts.service';
 import './post-detail.component.css'
 
-class PostDetail extends React.Component{
+class PostDetail extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props)
         this.state = {
-            post : null,
-            redirectTo : null
+            post: null,
+            redirectTo: null
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         let userData = authService.getLoggedUser();
-        if(!userData){
-            this.setState({redirectTo : "/login"})
-        }else{
+        if (!userData) {
+            this.setState({ redirectTo: "/login" })
+        } else {
             let postId = this.props.match.params.id
-            this.loadPost(postId) 
+            this.loadPost(postId)
         }
     }
 
-    async loadPost(postId){
+    async loadPost(postId) {
         try {
             let res = await postsService.getOne(postId)
-            this.setState({post : res.data.data[0]})
+            this.setState({ post: res.data.data[0] })
         } catch (error) {
             console.log(error);
             alert("Não foi possível carregar post.")
         }
     }
 
-    render(){
-        if(this.state.redirectTo){
+    async deletePost(postId) {
+        
+        if (!window.confirm("Deseja realmente excluir este post?")) return;
+
+        try {
+            await postsService.delete(postId)
+            alert("Post excluído com sucesso")
+            this.props.history.replace('/post-list')
+        } catch (error) {
+            console.log(error);
+            alert("Não foi excluir o post.")
+        }
+    }
+
+    render() {
+        if (this.state.redirectTo) {
             return (
-                <Redirect to={this.state.redirectTo}/>
+                <Redirect to={this.state.redirectTo} />
             )
         }
         return (
             <div className="container">
-                <div className="page-top">
-                    <div className="page-top__title">
-                        <h2>Post</h2>
-                        <p>Detalhes do post</p>
-                    </div>
-                    <div className="page-top__aside">
-                        <button className="btn btn-light">
-                            Voltar
-                        </button>
-                    </div>
-                </div>
+
+                <PageTop title='Post' desc='Detalhes do post'>
+                    <button className="btn btn-light" onClick={() => this.props.history.goBack()}>
+                        Voltar
+                    </button>
+                </PageTop>
+
                 <div className="row">
                     <div className="col-6">
                         <img className="post-img" src={this.state?.post?.imageUrl} alt="image" />
@@ -70,9 +81,19 @@ class PostDetail extends React.Component{
                             <h4>Conteúdo</h4>
                             <p>{this.state.post?.content}</p>
                         </div>
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-sm btn-outline-danger">Excluir</button>
-                            <button type="button" class="btn btn-sm btn-outline-primary">Editar</button>
+                        <div className="btn-group" role="group" aria-label="Basic example">
+                            <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={() => this.deletePost(this.state.post.id)}>
+                                Excluir
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => this.props.history.push('/post-edit/' + this.state.post.id)}>
+                                Editar
+                            </button>
                         </div>
                     </div>
 
@@ -80,7 +101,7 @@ class PostDetail extends React.Component{
             </div>
         )
     }
-    
+
 }
 
 export default PostDetail

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
+import PageTop from '../../components/page-top/page-top.component';
 import authService from '../../services/auth.service';
 import postsService from '../../services/posts.service';
 import './post-list.component.css'
@@ -44,19 +45,15 @@ class PostList extends React.Component {
 
         return (
             <div className="container">
-                <div className="page-top">
-                    <div className="page-top__title">
-                        <h2>Posts</h2>
-                        <p>Listagem dos posts</p>
-                    </div>
-                    <div className="page-top__aside">
-                        <button className="btn btn-primary">
-                            Adicionar
-                        </button>
-                    </div>
-                </div>
+
+                <PageTop title='Posts' desc='Listagem dos posts'>
+                    <button className="btn btn-primary" onClick={() => this.props.history.push('/post-add')}>
+                        Adicionar
+                    </button>
+                </PageTop>
+
                 {this.state.posts.map(post => (
-                    <Link to={"/post-detail/" + post.id}>
+                    <Link to={"/post-detail/" + post.id} key={post.id}>
                         <div className="post-card">
                             <div className="post-card__img">
                                 <img src={post.imageUrl}/>
