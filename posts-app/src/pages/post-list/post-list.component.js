@@ -1,73 +1,121 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import PageTop from '../../components/page-top/page-top.component';
 import authService from '../../services/auth.service';
 import postsService from '../../services/posts.service';
 import './post-list.component.css'
 
-class PostList extends React.Component {
+const PostList = (props) => {
 
-    constructor(props) {
-        super(props)
+    const [posts, setPost] = useState([])
+    const [redirectTo, setRedirectTo] = useState(null)
+    const [search, setSearch] = useState("")
 
-        this.state = {
-            posts: [],
-            redirectTo: null
-        }
-    }
+    // useEffect(()=> {
+    //     let userData = authService.getLoggedUser();
+    //     if (!userData) {
+    //         setRedirectTo("/login")
+    //     } else {
+    //         loadPosts()
+    //     }
+    // }, [])
 
-    componentDidMount() {
+    // useEffect(()=> {
+    //     if(search != ""){
+    //         console.log("called")
+    //         loadPosts({search})
+    //     }else{
+            //     loadPosts()
+            // }
+    // }, [search])
+
+    // useEffect(()=> {
+    //     const timeOutId = setTimeout(() => {
+    //         if(search != ""){
+    //             console.log("called")
+    //             loadPosts({search})
+    //         }else{
+    //             loadPosts()
+    //         }
+    //     }, 500)
+    //     return () => {
+    //         clearTimeout(timeOutId)
+    //     }
+    // }, [search])
+
+    useEffect(()=> {
+        
         let userData = authService.getLoggedUser();
         if (!userData) {
-            this.setState({ redirectTo: "/login" })
-        } else {
-            this.loadPosts()
+            setRedirectTo("/login")
+            return;
         }
-    }
 
-    async loadPosts() {
+        const timeOutId = setTimeout(() => {
+            if(search != ""){
+                console.log("called")
+                loadPosts({search})
+            }else{
+                loadPosts()
+            }
+        }, 500)
+        return () => {
+            clearTimeout(timeOutId)
+        }
+        
+    }, [search])
+
+    const loadPosts = async (query) => {
         try {
-            let res = await postsService.list()
-            this.setState({ posts: res.data.data })
+            let res = await postsService.list(query)
+            setPost(res.data.data)
         } catch (error) {
             console.log(error);
             alert("Não foi possível listar os posts.")
         }
     }
 
-    render() {
-
-        if (this.state.redirectTo) {
-            return (
-                <Redirect to={this.state.redirectTo} />
-            )
-        }
-
+    if (redirectTo) {
         return (
-            <div className="container">
-
-                <PageTop title='Posts' desc='Listagem dos posts'>
-                    <button className="btn btn-primary" onClick={() => this.props.history.push('/post-add')}>
-                        Adicionar
-                    </button>
-                </PageTop>
-
-                {this.state.posts.map(post => (
-                    <Link to={"/post-detail/" + post.id} key={post.id}>
-                        <div className="post-card">
-                            <div className="post-card__img">
-                                <img src={post.imageUrl}/>
-                            </div>
-                            <div className="post-card__text">
-                                <h4>{post.title}</h4>
-                                <p>{post.content}</p>
-                            </div>
-                        </div>
-                    </Link>
-                ))}
-            </div>
+            <Redirect to={redirectTo} />
         )
     }
+
+    return (
+        <div className="container">
+
+            <PageTop title='Posts' desc='Listagem dos posts'>
+                <button className="btn btn-primary" onClick={() => props.history.push('/post-add')}>
+                    Adicionar
+                </button>
+            </PageTop>
+
+            <div className="form-group">
+            <label htmlFor="search">Pesquisar</label>
+                <input 
+                    type="text" 
+                    className="form-control" 
+                    id="search" 
+                    placeholder="Comece a digitar para pesquisar" 
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}/>
+            </div>
+
+            {posts.map(post => (
+                <Link to={"/post-detail/" + post.id} key={post.id}>
+                    <div className="post-card">
+                        <div className="post-card__img">
+                            <img src={post.imageUrl}/>
+                        </div>
+                        <div className="post-card__text">
+                            <h4>{post.title}</h4>
+                            <p>{post.content}</p>
+                        </div>
+                    </div>
+                </Link>
+            ))}
+        </div>
+    )
 
 }
 

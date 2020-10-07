@@ -4,9 +4,9 @@ const apiUrl = "http://localhost:8000/api"
 
 const postsService = {
 
-    async list(){
+    async list(query){
         const enpoint = apiUrl + "/posts"
-        return axios.get(enpoint)
+        return axios.get(enpoint, {params : query})
     },
 
     async getOne(postId){
